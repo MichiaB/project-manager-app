@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker - Extension</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f3f5f7;
+        }
+
+        header {
+            background: #7bbccc;
+            color: white;
+            padding: 1.25rem 1rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            letter-spacing: 0.2px;
+        }
+
+        nav {
+            background: #333;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.9rem;
+            display: inline-block;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        nav a:hover {
+            background: #4CAF50;
+        }
+
+        nav a.active {
+            background: #4CAF50;
+        }
+
+        main {
+            max-width: 1500px;
+            width: min(1500px, 100%);
+            margin: 2rem auto;
+            padding: 0 0.5rem;
+        }
+
+        section {
+            margin: 2rem 0;
+            background: #fff;
+            border: 1px solid #e3e6ea;
+            border-radius: 10px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            margin-bottom: 0.45rem;
+            font-size: 1.35rem;
+        }
+
+        p {
+            color: #4f5b66;
+        }
+
+        .page-tabs {
+            display: inline-flex;
+            gap: 0.35rem;
+            margin-top: 0.8rem;
+            margin-bottom: 1rem;
+            background: #eef2f5;
+            border: 1px solid #d7dde3;
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .tab-link {
+            text-decoration: none;
+            color: #2f3a42;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+        }
+
+        .tab-link.active {
+            background: #ffffff;
+            border: 1px solid #cfd7df;
+        }
+
+        .extension-body {
+            min-height: 220px;
+            border: 1px dashed #c9d1d9;
+            border-radius: 8px;
+            background: #fbfcfd;
+            margin-top: 0.5rem;
+        }
+
+        .phase-controls {
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid #dde2e7;
+            background: #fbfcfd;
+            border-radius: 8px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            align-items: end;
+        }
+
+        .phase-buttons {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .phase-buttons button {
+            flex: 1;
+        }
+
+        .phase-save-status {
+            margin-top: 0.35rem;
+            font-size: 0.82rem;
+            color: #5b6570;
+        }
+
+        .phase-controls label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .phase-controls input,
+        .phase-controls select,
+        .phase-controls button,
+        .phase-chart input,
+        .phase-chart select,
+        .phase-chart textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font: inherit;
+        }
+
+        .phase-comments {
+            min-height: 68px;
+            resize: vertical;
+            line-height: 1.35;
+        }
+
+        .phase-controls button,
+        .phase-remove-btn {
+            background: #4CAF50;
+            border: 1px solid #2f7f33;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .phase-chart {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            min-width: 1200px;
+        }
+
+        .phase-table-wrap {
+            margin-top: 1rem;
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+        }
+
+        .phase-chart th,
+        .phase-chart td {
+            border: 1px solid #ddd;
+            padding: 0.75rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .phase-chart th {
+            background: #f3f6f8;
+            font-weight: 600;
+            color: #2f3a42;
+        }
+
+        .phase-chart tbody tr:nth-child(even) {
+            background: #fbfcfd;
+        }
+
+        .phase-progress-track {
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 0.4rem;
+        }
+
+        .phase-progress-fill {
+            height: 100%;
+            background: #4CAF50;
+        }
+
+        .phase-remove-btn {
+            background: #333;
+            border: 1px solid #222;
+            padding: 0.5rem 0.7rem;
+            border-radius: 4px;
+        }
+
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.92rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Project Tracker</h1>
+    </header>
+
+    <nav>
+        <a href="pt.html#home">Dashboard</a>
+        <a href="blank.html" class="active">Project Life Cycle</a>
+        <a href="pt.html#about">About</a>
+    </nav>
+
+    <main>
+        <section id="extension">
+            <h2>Home Extension</h2>
+            <p>This page extends the Home workspace and can be used for additional tracker content.</p>
+
+            <form id="phase-form" class="phase-controls" aria-label="Add project life cycle phase">
+                <div>
+                    <label for="phase-project-name">Project Name</label>
+                    <input id="phase-project-name" name="projectName" type="text" required>
+                </div>
+                <div>
+                    <label for="phase-name">Phase</label>
+                    <input id="phase-name" name="phase" type="text" required>
+                </div>
+                <div>
+                    <label for="phase-status">Status</label>
+                    <select id="phase-status" name="status">
+                        <option>Planning</option>
+                        <option selected>In Progress</option>
+                        <option>Completed</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="phase-comments">Comments</label>
+                    <input id="phase-comments" name="comments" type="text" placeholder="Add comments">
+                </div>
+                <div>
+                    <label for="phase-date">Date</label>
+                    <input id="phase-date" name="date" type="date">
+                </div>
+                <div>
+                    <label for="phase-progress">Progress (%)</label>
+                    <input id="phase-progress" name="progress" type="number" min="0" max="100" value="0" required>
+                </div>
+                <div>
+                    <div class="phase-buttons">
+                        <button type="submit">Add Phase</button>
+                        <button id="save-lifecycle-btn" type="button">Save Current</button>
+                    </div>
+                    <div id="phase-save-status" class="phase-save-status"></div>
+                </div>
+            </form>
+
+            <div class="phase-table-wrap">
+                <table class="phase-chart" aria-label="Project life cycle phase tracker">
+                    <thead>
+                        <tr>
+                            <th>Project Name</th>
+                            <th>Phase</th>
+                            <th>Status</th>
+                            <th>Comments</th>
+                            <th>Date</th>
+                            <th>Progress</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="phase-body"></tbody>
+                </table>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2024 Project Tracker. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const phaseForm = document.getElementById('phase-form');
+        const phaseBody = document.getElementById('phase-body');
+        const saveLifecycleBtn = document.getElementById('save-lifecycle-btn');
+        const phaseSaveStatus = document.getElementById('phase-save-status');
+        const lifecycleStorageKey = 'projectLifeCycleData';
+        const legacyPhaseStorageKey = 'projectLifeCyclePhases';
+
+        let phases = [];
+        let lifecycles = [];
+        let selectedLifecycleId = '';
+
+        const defaultPhases = [
+            { projectName: 'Website Redesign', phase: 'Initiation', status: 'Completed', comments: 'Kickoff approved', date: '2026-02-10', progress: 100 },
+            { projectName: 'Website Redesign', phase: 'Planning', status: 'In Progress', comments: 'Finalizing milestones', date: '2026-02-20', progress: 60 },
+            { projectName: 'Website Redesign', phase: 'Execution', status: 'Planning', comments: '', date: '2026-03-05', progress: 15 }
+        ];
+
+        function clampProgress(value) {
+            const numberValue = Number(value);
+            if (Number.isNaN(numberValue)) {
+                return 0;
+            }
+            return Math.max(0, Math.min(100, numberValue));
+        }
+
+        function normalizePhase(item) {
+            return {
+                projectName: item.projectName || '',
+                phase: item.phase || '',
+                status: item.status || 'Planning',
+                comments: item.comments || '',
+                date: item.date || '',
+                progress: clampProgress(item.progress)
+            };
+        }
+
+        function createLifecycle(name, lifecyclePhases) {
+            return {
+                id: `lc-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                name,
+                phases: lifecyclePhases
+            };
+        }
+
+        function getCurrentLifecycle() {
+            return lifecycles.find((lifecycle) => lifecycle.id === selectedLifecycleId) || null;
+        }
+
+        function saveLifecycleData() {
+            const payload = {
+                selectedLifecycleId,
+                lifecycles
+            };
+            localStorage.setItem(lifecycleStorageKey, JSON.stringify(payload));
+        }
+
+        function showLifecycleStatus(message) {
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            phaseSaveStatus.textContent = `${message} (${timeLabel})`;
+        }
+
+        function loadLifecycleData() {
+            const stored = localStorage.getItem(lifecycleStorageKey);
+            if (stored) {
+                try {
+                    const parsed = JSON.parse(stored);
+                    if (Array.isArray(parsed.lifecycles) && parsed.lifecycles.length > 0) {
+                        lifecycles = parsed.lifecycles.map((lifecycle, index) => ({
+                            id: lifecycle.id || `lc-${index}`,
+                            name: lifecycle.name || `Project Life Cycle ${index + 1}`,
+                            phases: Array.isArray(lifecycle.phases)
+                                ? lifecycle.phases.map((item) => normalizePhase(item))
+                                : []
+                        }));
+
+                        selectedLifecycleId = parsed.selectedLifecycleId && lifecycles.some((item) => item.id === parsed.selectedLifecycleId)
+                            ? parsed.selectedLifecycleId
+                            : lifecycles[0].id;
+                        const currentLifecycle = getCurrentLifecycle();
+                        phases = currentLifecycle ? currentLifecycle.phases : [];
+                        return;
+                    }
+                } catch {
+                }
+            }
+
+            const legacyStored = localStorage.getItem(legacyPhaseStorageKey);
+            if (legacyStored) {
+                try {
+                    const parsedLegacy = JSON.parse(legacyStored);
+                    const legacyPhases = Array.isArray(parsedLegacy)
+                        ? parsedLegacy.map((item) => normalizePhase(item))
+                        : [...defaultPhases];
+                    const migratedLifecycle = createLifecycle('Project Life Cycle 1', legacyPhases);
+                    lifecycles = [migratedLifecycle];
+                    selectedLifecycleId = migratedLifecycle.id;
+                    phases = migratedLifecycle.phases;
+                    saveLifecycleData();
+                    return;
+                } catch {
+                }
+            }
+
+            const initialLifecycle = createLifecycle('Project Life Cycle 1', [...defaultPhases]);
+            lifecycles = [initialLifecycle];
+            selectedLifecycleId = initialLifecycle.id;
+            phases = initialLifecycle.phases;
+            saveLifecycleData();
+        }
+
+        function renderPhases() {
+            phaseBody.innerHTML = '';
+
+            phases.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="text" value="${item.projectName || ''}" data-field="projectName" data-index="${index}"></td>
+                    <td><input type="text" value="${item.phase}" data-field="phase" data-index="${index}"></td>
+                    <td>
+                        <select data-field="status" data-index="${index}">
+                            <option ${item.status === 'Planning' ? 'selected' : ''}>Planning</option>
+                            <option ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    </td>
+                    <td><textarea class="phase-comments" data-field="comments" data-index="${index}" placeholder="Add comments">${item.comments || ''}</textarea></td>
+                    <td><input type="date" value="${item.date || ''}" data-field="date" data-index="${index}"></td>
+                    <td>
+                        <input type="number" min="0" max="100" value="${item.progress}" data-field="progress" data-index="${index}">
+                        <div class="phase-progress-track"><div class="phase-progress-fill" style="width: ${item.progress}%;"></div></div>
+                    </td>
+                    <td><button type="button" class="phase-remove-btn" data-action="remove-phase" data-index="${index}">Remove</button></td>
+                `;
+                phaseBody.appendChild(row);
+            });
+        }
+
+        phaseForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(phaseForm);
+            const projectName = (formData.get('projectName') || '').toString().trim();
+            const phase = (formData.get('phase') || '').toString().trim();
+            const status = (formData.get('status') || 'Planning').toString();
+            const comments = (formData.get('comments') || '').toString();
+            const date = (formData.get('date') || '').toString();
+            const progress = clampProgress(formData.get('progress'));
+
+            if (!projectName || !phase) {
+                return;
+            }
+
+            phases.push({ projectName, phase, status, comments, date, progress });
+            saveLifecycleData();
+            renderPhases();
+
+            phaseForm.reset();
+            document.getElementById('phase-status').value = 'In Progress';
+            document.getElementById('phase-progress').value = '0';
+        });
+
+        phaseBody.addEventListener('input', (event) => {
+            const target = event.target;
+            const index = Number(target.dataset.index);
+            const field = target.dataset.field;
+
+            if (Number.isNaN(index) || !phases[index] || !field) {
+                return;
+            }
+
+            phases[index][field] = field === 'progress' ? clampProgress(target.value) : target.value;
+            saveLifecycleData();
+
+            if (field === 'progress') {
+                const fill = target.nextElementSibling?.firstElementChild;
+                if (fill) {
+                    fill.style.width = `${phases[index][field]}%`;
+                }
+            }
+        });
+
+        phaseBody.addEventListener('change', (event) => {
+            const target = event.target;
+            const index = Number(target.dataset.index);
+            const field = target.dataset.field;
+
+            if (!Number.isNaN(index) && phases[index] && field) {
+                phases[index][field] = field === 'progress' ? clampProgress(target.value) : target.value;
+                saveLifecycleData();
+                renderPhases();
+                return;
+            }
+
+            if (target.dataset.action !== 'remove-phase') {
+                return;
+            }
+
+            const removeIndex = Number(target.dataset.index);
+            if (Number.isNaN(removeIndex) || !phases[removeIndex]) {
+                return;
+            }
+
+            phases.splice(removeIndex, 1);
+            saveLifecycleData();
+            renderPhases();
+        });
+
+        saveLifecycleBtn.addEventListener('click', () => {
+            saveLifecycleData();
+            const currentLifecycle = getCurrentLifecycle();
+            showLifecycleStatus(`Saved ${currentLifecycle ? currentLifecycle.name : 'life cycle'}`);
+        });
+
+        loadLifecycleData();
+        renderPhases();
+    </script>
+</body>
+</html>

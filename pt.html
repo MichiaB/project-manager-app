@@ -1,0 +1,1072 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Project Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: "Segoe UI", Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f3f5f7;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #1f3b5b 0%, #2f5f8f 100%);
+            color: white;
+            padding: 1.25rem 1rem;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+        }
+
+        header h1 {
+            font-size: 1.8rem;
+            letter-spacing: 0.2px;
+        }
+
+        .header-logo {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.18);
+            padding: 4px;
+        }
+        
+        nav {
+            background: #333;
+            padding: 0.5rem;
+            display: flex;
+            justify-content: center;
+            gap: 0.25rem;
+            flex-wrap: wrap;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 0.9rem;
+            display: inline-block;
+            border-radius: 4px;
+            transition: background 0.2s ease;
+        }
+
+        nav a.active {
+            background: #4CAF50;
+        }
+        
+        nav a:hover {
+            background: #4CAF50;
+        }
+        
+        main {
+            max-width: 1900px;
+            width: min(1900px, 100%);
+            margin: 2rem auto;
+            padding: 0 0.5rem;
+        }
+        
+        section {
+            margin: 2rem 0;
+            background: #fff;
+            border: 1px solid #e3e6ea;
+            border-radius: 10px;
+            padding: 1.25rem;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        h2 {
+            margin-bottom: 0.45rem;
+            font-size: 1.35rem;
+        }
+
+        #home > p {
+            color: #4f5b66;
+        }
+
+        .page-tabs {
+            display: inline-flex;
+            gap: 0.35rem;
+            margin-top: 0.8rem;
+            margin-bottom: 1rem;
+            background: #eef2f5;
+            border: 1px solid #d7dde3;
+            border-radius: 8px;
+            padding: 0.25rem;
+        }
+
+        .tab-link {
+            text-decoration: none;
+            color: #2f3a42;
+            font-size: 0.9rem;
+            font-weight: 600;
+            padding: 0.35rem 0.65rem;
+            border-radius: 6px;
+        }
+
+        .tab-link.active {
+            background: #ffffff;
+            border: 1px solid #cfd7df;
+        }
+
+        .tracker-chart {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 0;
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            min-width: 1450px;
+        }
+
+        .tracker-table-wrap {
+            margin-top: 1rem;
+            width: 100%;
+            overflow-x: auto;
+            border-radius: 8px;
+            border: 1px solid #d9e0e6;
+            background: #fff;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+        }
+
+        .tracker-graph {
+            margin-top: 1rem;
+            border: 1px solid #dde2e7;
+            background: #fbfcfd;
+            padding: 0.75rem;
+            border-radius: 8px;
+        }
+
+        .tracker-graph-header {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 0.6rem;
+        }
+
+        .export-btn {
+            background: #333;
+            color: white;
+            border: 1px solid #222;
+            border-radius: 4px;
+            padding: 0.4rem 0.75rem;
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .progress-bars {
+            display: grid;
+            gap: 0.65rem;
+        }
+
+        .progress-row {
+            display: grid;
+            grid-template-columns: 180px 1fr 52px;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .progress-row-label {
+            font-size: 0.9rem;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .progress-row-track {
+            background: #e0e0e0;
+            border-radius: 6px;
+            overflow: hidden;
+            height: 12px;
+        }
+
+        .progress-row-fill {
+            height: 100%;
+            background: #4CAF50;
+        }
+
+        .progress-row-value {
+            font-size: 0.85rem;
+            text-align: right;
+        }
+
+        .graph-project-values {
+            margin-top: 0.5rem;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            font-size: 0.85rem;
+        }
+
+        .graph-project-values span {
+            border: 1px solid #ddd;
+            background: #fff;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+        }
+
+        .tracker-controls {
+            margin-top: 1rem;
+            padding: 1rem;
+            border: 1px solid #dde2e7;
+            background: #fbfcfd;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 0.75rem;
+            align-items: end;
+            border-radius: 8px;
+        }
+
+        .tracker-controls label {
+            display: block;
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .tracker-controls input,
+        .tracker-controls select,
+        .tracker-controls button,
+        .tracker-chart input,
+        .tracker-chart select,
+        .tracker-chart textarea {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font: inherit;
+        }
+
+        .tracker-controls input:focus,
+        .tracker-controls select:focus,
+        .tracker-chart input:focus,
+        .tracker-chart select:focus,
+        .tracker-chart textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 0 2px rgba(76, 175, 80, 0.15);
+        }
+
+        .notes-input {
+            min-height: 72px;
+            resize: vertical;
+            line-height: 1.4;
+        }
+
+        .tracker-controls button,
+        .delete-btn {
+            cursor: pointer;
+            border: none;
+            color: white;
+        }
+
+        .tracker-controls button {
+            background: #4CAF50;
+            border: 1px solid #2f7f33;
+            font-weight: 600;
+        }
+
+        .tracker-controls button:hover,
+        .export-btn:hover,
+        .delete-btn:hover,
+        .doc-remove:hover {
+            filter: brightness(0.95);
+        }
+
+        .save-chart-btn {
+            background: #333;
+            border: 1px solid #222;
+        }
+
+        .tracker-buttons {
+            display: flex;
+            gap: 0.6rem;
+        }
+
+        .tracker-buttons button {
+            width: auto;
+            flex: 1;
+        }
+
+        .save-status {
+            display: block;
+            margin-top: 0.35rem;
+            font-size: 0.8rem;
+            color: #666;
+        }
+
+        .delete-btn {
+            background: #333;
+            padding: 0.5rem 0.75rem;
+            border-radius: 4px;
+            margin-top: 0.5rem;
+        }
+
+        .tracker-chart th,
+        .tracker-chart td {
+            border: 1px solid #e1e7ed;
+            padding: 0.65rem;
+            text-align: left;
+            vertical-align: top;
+        }
+
+        .tracker-chart th {
+            background: #edf2f6;
+            font-weight: 600;
+            color: #2f3a42;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            font-size: 0.76rem;
+            position: sticky;
+            top: 0;
+            z-index: 1;
+        }
+
+        .tracker-chart tbody tr:nth-child(even) {
+            background: #fbfcfd;
+        }
+
+        .tracker-chart tbody tr:hover {
+            background: #f3f7fa;
+        }
+
+        .tracker-chart input,
+        .tracker-chart select,
+        .tracker-chart textarea {
+            background: #fff;
+            border-color: #cfd7df;
+            min-height: 38px;
+        }
+
+        .tracker-chart textarea {
+            min-height: 84px;
+        }
+
+        .tracker-chart td:last-child {
+            min-width: 130px;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background: #dce3ea;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 0.4rem;
+            border: 1px solid #d3dbe4;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #4CAF50 0%, #66bb6a 100%);
+        }
+
+        .progress-value {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #2f3a42;
+        }
+
+        .days-remaining-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 76px;
+            padding: 0.25rem 0.55rem;
+            border-radius: 999px;
+            border: 1px solid #cfd7df;
+            background: #f5f8fb;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: #2f3a42;
+        }
+
+
+        .docs-column {
+            min-width: 220px;
+        }
+
+        .doc-upload {
+            margin-bottom: 0.5rem;
+            width: 100%;
+            font-size: 0.82rem;
+        }
+
+        .doc-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .doc-list li {
+            display: flex;
+            gap: 0.4rem;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 0.35rem;
+            font-size: 0.85rem;
+            border: 1px solid #e1e7ed;
+            border-radius: 6px;
+            padding: 0.3rem 0.35rem;
+            background: #f9fbfc;
+        }
+
+        .doc-list a {
+            max-width: 120px;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
+
+        .doc-link {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .doc-remove {
+            background: #333;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            padding: 0.3rem 0.55rem;
+            cursor: pointer;
+            font-size: 0.8rem;
+        }
+        
+        footer {
+            background: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+            margin-top: 2rem;
+            font-size: 0.92rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <img class="header-logo" src="assets/tracker-logo.svg" alt="Project Tracker logo">
+        <h1>Welcome to Project Tracker</h1>
+    </header>
+    
+    <nav>
+        <a href="#home" class="active">Dashboard</a>
+        <a href="blank.html">Project Life Cycle</a>
+    </nav>
+    
+    <main>
+        <section id="home">
+            <h2> Dashboard </h2>
+            <p>Track project status, timelines, and progress in one place.</p>
+
+            <div class="page-tabs" aria-label="Page tabs">
+                <a class="tab-link active" href="pt.html">Dashboard</a>
+                <a class="tab-link" href="blank.html">Project Life Cycle</a>
+            </div>
+
+            <form id="tracker-form" class="tracker-controls" aria-label="Add project to tracker">
+                <div>
+                    <label for="project-name">Project</label>
+                    <input id="project-name" name="project" type="text" required>
+                </div>
+                <div>
+                    <label for="project-status">Status</label>
+                    <select id="project-status" name="status">
+                        <option>Planning</option>
+                        <option selected>In Progress</option>
+                        <option>Completed</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="project-start-date">Start Date</label>
+                    <input id="project-start-date" name="startDate" type="date">
+                </div>
+                <div>
+                    <label for="project-end-date">End Date</label>
+                    <input id="project-end-date" name="endDate" type="date">
+                </div>
+                <div>
+                    <label for="project-progress">Progress (%)</label>
+                    <input id="project-progress" name="progress" type="number" min="0" max="100" value="0" required>
+                </div>
+                <div>
+                    <label for="project-action">Action</label>
+                    <input id="project-action" name="action" type="text" placeholder="Next step">
+                </div>
+                <div>
+                    <div class="tracker-buttons">
+                        <button type="submit">Add Project</button>
+                        <button id="save-chart-btn" class="save-chart-btn" type="button">Save Chart</button>
+                    </div>
+                    <span id="save-status" class="save-status"></span>
+                </div>
+            </form>
+
+            <div class="tracker-graph" aria-label="Project progress bars">
+                <div class="tracker-graph-header">
+                    <button id="export-data-btn" class="export-btn" type="button">Export Data</button>
+                </div>
+                <div id="progress-bars" class="progress-bars"></div>
+                <div id="graph-project-values" class="graph-project-values"></div>
+            </div>
+
+            <div class="tracker-table-wrap">
+                <table class="tracker-chart" aria-label="Project tracker chart">
+                    <thead>
+                        <tr>
+                            <th>Project</th>
+                            <th>Status</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Days Remaining</th>
+                            <th>Progress</th>
+                            <th>Actions</th>
+                            <th>Notes</th>
+                            <th>Documents</th>
+                            <th>Remove</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tracker-body"></tbody>
+                </table>
+            </div>
+        </section>
+        
+    </main>
+    
+    <footer>
+        <p>&copy; 2024 Project Tracker. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const trackerBody = document.getElementById('tracker-body');
+        const trackerForm = document.getElementById('tracker-form');
+        const saveChartBtn = document.getElementById('save-chart-btn');
+        const saveStatus = document.getElementById('save-status');
+        const exportDataBtn = document.getElementById('export-data-btn');
+        const progressBars = document.getElementById('progress-bars');
+        const graphProjectValues = document.getElementById('graph-project-values');
+        const projectsStorageKey = 'projectTrackerProjects';
+
+        const defaultProjects = [
+            {
+                name: 'Website Redesign',
+                status: 'In Progress',
+                startDate: '2026-02-15',
+                endDate: '2026-03-20',
+                progress: 70,
+                action: 'Review homepage mockups',
+                notes: '',
+                documents: [],
+                history: [{ date: '2026-02-15', progress: 70, status: 'In Progress' }]
+            },
+            {
+                name: 'Mobile App MVP',
+                status: 'Planning',
+                startDate: '2026-02-20',
+                endDate: '2026-04-01',
+                progress: 35,
+                action: 'Finalize feature list',
+                notes: '',
+                documents: [],
+                history: [{ date: '2026-02-20', progress: 35, status: 'Planning' }]
+            },
+            {
+                name: 'API Integration',
+                status: 'Completed',
+                startDate: '2026-02-10',
+                endDate: '2026-02-25',
+                progress: 100,
+                action: 'Monitor production logs',
+                notes: '',
+                documents: [],
+                history: [{ date: '2026-02-10', progress: 100, status: 'Completed' }]
+            }
+        ];
+
+        let projects = [];
+
+        function clampProgress(value) {
+            const numberValue = Number(value);
+            if (Number.isNaN(numberValue)) {
+                return 0;
+            }
+            return Math.max(0, Math.min(100, numberValue));
+        }
+
+        function saveProjectsToStorage() {
+            try {
+                localStorage.setItem(projectsStorageKey, JSON.stringify(projects));
+                return true;
+            } catch {
+                return false;
+            }
+        }
+
+        function showSavedStatus() {
+            const now = new Date();
+            const timeLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            saveStatus.textContent = `Saved at ${timeLabel}`;
+        }
+
+        function getTodayISODate() {
+            return new Date().toISOString().slice(0, 10);
+        }
+
+        function getDaysRemaining(endDate) {
+            if (!endDate) {
+                return '—';
+            }
+
+            const today = new Date();
+            const todayAtMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const endDateAtMidnight = new Date(`${endDate}T00:00:00`);
+
+            if (Number.isNaN(endDateAtMidnight.getTime())) {
+                return '—';
+            }
+
+            const millisecondsPerDay = 24 * 60 * 60 * 1000;
+            const rawDays = Math.ceil((endDateAtMidnight - todayAtMidnight) / millisecondsPerDay);
+            return `${Math.max(0, rawDays)} days`;
+        }
+
+        function getRaidColor(progress) {
+            const value = clampProgress(progress);
+            if (value < 40) {
+                return '#D32F2F';
+            }
+            if (value < 80) {
+                return '#F9A825';
+            }
+            if (value < 100) {
+                return '#2E7D32';
+            }
+            return '#1976D2';
+        }
+
+        function normalizeDocuments(documents) {
+            if (!documents) {
+                return [];
+            }
+
+            const documentArray = Array.isArray(documents) ? documents : [documents];
+            return documentArray
+                .filter((documentItem) => documentItem && typeof documentItem === 'object')
+                .filter((documentItem) => typeof documentItem.name === 'string' && typeof documentItem.dataUrl === 'string')
+                .map((documentItem) => ({
+                    id: documentItem.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                    name: documentItem.name,
+                    size: Number(documentItem.size) || 0,
+                    type: documentItem.type || '',
+                    dataUrl: documentItem.dataUrl
+                }));
+        }
+
+        function normalizeProject(project) {
+            const normalizedProgress = clampProgress(project.progress);
+            const normalizedStartDate = project.startDate || project.date || getTodayISODate();
+            const normalizedEndDate = project.endDate || '';
+            const normalizedHistory = Array.isArray(project.history)
+                ? project.history
+                    .map((entry) => ({
+                        date: entry.date || normalizedStartDate,
+                        progress: clampProgress(entry.progress),
+                        status: entry.status || project.status || 'Planning'
+                    }))
+                : [];
+
+            if (normalizedHistory.length === 0) {
+                normalizedHistory.push({ date: normalizedStartDate, progress: normalizedProgress, status: project.status || 'Planning' });
+            }
+
+            return {
+                name: project.name || '',
+                status: project.status || 'Planning',
+                startDate: normalizedStartDate,
+                endDate: normalizedEndDate,
+                progress: normalizedProgress,
+                action: project.action || '',
+                notes: project.notes || '',
+                documents: normalizeDocuments(project.documents),
+                history: normalizedHistory
+            };
+        }
+
+        function appendProgressHistory(project, progress) {
+            const point = {
+                date: project.startDate || project.date || getTodayISODate(),
+                progress: clampProgress(progress),
+                status: project.status || 'Planning'
+            };
+
+            if (!Array.isArray(project.history)) {
+                project.history = [];
+            }
+
+            const lastPoint = project.history[project.history.length - 1];
+            if (lastPoint && lastPoint.date === point.date) {
+                lastPoint.progress = point.progress;
+                lastPoint.status = point.status;
+                return;
+            }
+
+            project.history.push(point);
+        }
+
+        function syncLatestHistoryPoint(project) {
+            if (!Array.isArray(project.history)) {
+                project.history = [];
+            }
+
+            const currentPoint = {
+                date: project.startDate || project.date || getTodayISODate(),
+                progress: clampProgress(project.progress),
+                status: project.status || 'Planning'
+            };
+
+            if (project.history.length === 0) {
+                project.history.push(currentPoint);
+                return;
+            }
+
+            project.history[project.history.length - 1] = currentPoint;
+        }
+
+        function loadProjectsFromStorage() {
+            const storedProjects = localStorage.getItem(projectsStorageKey);
+            if (!storedProjects) {
+                projects = [...defaultProjects];
+                return;
+            }
+
+            try {
+                const parsedProjects = JSON.parse(storedProjects);
+                if (Array.isArray(parsedProjects) && parsedProjects.length > 0) {
+                    projects = parsedProjects.map((project) => normalizeProject(project));
+                    return;
+                }
+            } catch {
+            }
+
+            projects = [...defaultProjects];
+        }
+
+        function renderProjects() {
+            trackerBody.innerHTML = '';
+
+            projects.forEach((project, index) => {
+                const documentItems = (project.documents || []).map((documentItem) => `
+                    <li>
+                        <a class="doc-link" href="${documentItem.dataUrl}" download="${documentItem.name}">${documentItem.name}</a>
+                        <button type="button" class="doc-remove" data-action="remove-document" data-index="${index}" data-doc-id="${documentItem.id}">Remove</button>
+                    </li>
+                `).join('');
+
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <input type="text" value="${project.name}" data-field="name" data-index="${index}">
+                    </td>
+                    <td>
+                        <select data-field="status" data-index="${index}">
+                            <option ${project.status === 'Planning' ? 'selected' : ''}>Planning</option>
+                            <option ${project.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
+                            <option ${project.status === 'Completed' ? 'selected' : ''}>Completed</option>
+                        </select>
+                    </td>
+                    <td>
+                        <input type="date" value="${project.startDate || ''}" data-field="startDate" data-index="${index}">
+                    </td>
+                    <td>
+                        <input type="date" value="${project.endDate || ''}" data-field="endDate" data-index="${index}">
+                    </td>
+                    <td>
+                        <span class="days-remaining-badge">${getDaysRemaining(project.endDate)}</span>
+                    </td>
+                    <td>
+                        <input type="number" min="0" max="100" value="${project.progress}" data-field="progress" data-index="${index}">
+                        <div class="progress-value">${project.progress}%</div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: ${project.progress}%;"></div></div>
+                    </td>
+                    <td>
+                        <input type="text" value="${project.action || ''}" data-field="action" data-index="${index}" placeholder="Next step">
+                    </td>
+                    <td>
+                        <textarea class="notes-input" data-field="notes" data-index="${index}" placeholder="Add notes">${project.notes || ''}</textarea>
+                    </td>
+                    <td>
+                        <input class="doc-upload" type="file" data-action="add-documents" data-index="${index}" multiple>
+                        <ul class="doc-list">${documentItems}</ul>
+                    </td>
+                    <td>
+                        <button type="button" class="delete-btn" data-action="delete" data-index="${index}">Remove Project</button>
+                    </td>
+                `;
+                trackerBody.appendChild(row);
+            });
+
+            renderProgressGraph();
+        }
+
+        function renderProgressGraph() {
+            if (projects.length === 0) {
+                progressBars.innerHTML = '<div class="progress-row-label">No projects yet.</div>';
+                graphProjectValues.innerHTML = '';
+                return;
+            }
+
+            projects.forEach((project) => syncLatestHistoryPoint(project));
+
+            progressBars.innerHTML = projects.map((project) => {
+                const projectProgress = clampProgress(project.progress);
+                const progressColor = getRaidColor(projectProgress);
+                return `
+                    <div class="progress-row">
+                        <div class="progress-row-label">${project.name || 'Untitled'}</div>
+                        <div class="progress-row-track">
+                            <div class="progress-row-fill" style="width: ${projectProgress}%; background: ${progressColor};"></div>
+                        </div>
+                        <div class="progress-row-value">${projectProgress}%</div>
+                    </div>
+                `;
+            }).join('');
+
+            graphProjectValues.innerHTML = projects
+                .map((project) => `<span>${project.name || 'Untitled'}: ${clampProgress(project.progress)}%</span>`)
+                .join('');
+        }
+
+        function readFileAsDataUrl(file) {
+            return new Promise((resolve, reject) => {
+                const reader = new FileReader();
+                reader.onload = () => {
+                    resolve({
+                        id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        dataUrl: reader.result
+                    });
+                };
+                reader.onerror = () => reject(new Error('Failed to read file'));
+                reader.readAsDataURL(file);
+            });
+        }
+
+        trackerForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(trackerForm);
+            const name = (formData.get('project') || '').toString().trim();
+            const status = (formData.get('status') || 'Planning').toString();
+            const startDate = (formData.get('startDate') || '').toString();
+            const endDate = (formData.get('endDate') || '').toString();
+            const progress = clampProgress(formData.get('progress'));
+            const action = (formData.get('action') || '').toString().trim();
+
+            if (!name) {
+                return;
+            }
+
+            const projectStartDate = startDate || getTodayISODate();
+            projects.push({
+                name,
+                status,
+                startDate: projectStartDate,
+                endDate,
+                progress,
+                action,
+                notes: '',
+                documents: [],
+                history: [{ date: projectStartDate, progress, status }]
+            });
+            trackerForm.reset();
+            document.getElementById('project-status').value = 'In Progress';
+            document.getElementById('project-progress').value = '0';
+            saveProjectsToStorage();
+            renderProjects();
+        });
+
+        trackerBody.addEventListener('input', (event) => {
+            const target = event.target;
+            const index = Number(target.dataset.index);
+            const field = target.dataset.field;
+
+            if (Number.isNaN(index) || !projects[index] || !field) {
+                return;
+            }
+
+            if (field === 'progress') {
+                projects[index][field] = clampProgress(target.value);
+                appendProgressHistory(projects[index], projects[index][field]);
+            } else {
+                projects[index][field] = target.value;
+            }
+
+            if (field === 'progress' || field === 'startDate' || field === 'status') {
+                syncLatestHistoryPoint(projects[index]);
+            }
+
+            saveProjectsToStorage();
+            if (field === 'endDate' || field === 'startDate') {
+                renderProjects();
+                return;
+            }
+
+            renderProgressGraph();
+        });
+
+        trackerBody.addEventListener('keydown', (event) => {
+            const target = event.target;
+            if (target.dataset.field !== 'notes' || event.key !== 'Enter' || event.shiftKey) {
+                return;
+            }
+
+            event.preventDefault();
+
+            const selectionStart = target.selectionStart;
+            const selectionEnd = target.selectionEnd;
+            const bulletPrefix = '\n• ';
+            const nextValue = `${target.value.slice(0, selectionStart)}${bulletPrefix}${target.value.slice(selectionEnd)}`;
+
+            target.value = nextValue;
+            target.selectionStart = target.selectionEnd = selectionStart + bulletPrefix.length;
+
+            const index = Number(target.dataset.index);
+            if (Number.isNaN(index) || !projects[index]) {
+                return;
+            }
+
+            projects[index].notes = target.value;
+            saveProjectsToStorage();
+        });
+
+        trackerBody.addEventListener('click', (event) => {
+            const target = event.target;
+            const action = target.dataset.action;
+            if (action === 'delete') {
+                const index = Number(target.dataset.index);
+                if (Number.isNaN(index) || !projects[index]) {
+                    return;
+                }
+
+                const confirmed = confirm(`Remove "${projects[index].name || 'this project'}" from the chart?`);
+                if (!confirmed) {
+                    return;
+                }
+
+                projects.splice(index, 1);
+                saveProjectsToStorage();
+                renderProjects();
+                return;
+            }
+
+            if (action === 'remove-document') {
+                const index = Number(target.dataset.index);
+                const docId = target.dataset.docId;
+                if (Number.isNaN(index) || !projects[index] || !docId) {
+                    return;
+                }
+
+                projects[index].documents = projects[index].documents.filter((documentItem) => documentItem.id !== docId);
+                saveProjectsToStorage();
+                renderProjects();
+            }
+        });
+
+        trackerBody.addEventListener('change', async (event) => {
+            const target = event.target;
+            const index = Number(target.dataset.index);
+            const field = target.dataset.field;
+
+            if (!Number.isNaN(index) && projects[index] && field) {
+                if (field === 'progress') {
+                    projects[index][field] = clampProgress(target.value);
+                    appendProgressHistory(projects[index], projects[index][field]);
+                } else {
+                    projects[index][field] = target.value;
+                }
+
+                if (field === 'progress' || field === 'startDate') {
+                    syncLatestHistoryPoint(projects[index]);
+                }
+
+                saveProjectsToStorage();
+                if (field === 'endDate' || field === 'startDate') {
+                    renderProjects();
+                    return;
+                }
+
+                renderProgressGraph();
+                return;
+            }
+
+            if (target.dataset.action !== 'add-documents') {
+                return;
+            }
+
+            const docIndex = Number(target.dataset.index);
+            if (Number.isNaN(docIndex) || !projects[docIndex]) {
+                return;
+            }
+
+            const selectedFiles = Array.from(target.files || []);
+            if (selectedFiles.length === 0) {
+                return;
+            }
+
+            try {
+                const newDocuments = await Promise.all(selectedFiles.map((file) => readFileAsDataUrl(file)));
+                const existingDocuments = normalizeDocuments(projects[docIndex].documents);
+                projects[docIndex].documents = [...existingDocuments, ...newDocuments];
+
+                const saved = saveProjectsToStorage();
+                if (!saved) {
+                    projects[docIndex].documents = existingDocuments;
+                    alert('Could not save documents. Browser storage may be full.');
+                    return;
+                }
+
+                target.value = '';
+                renderProjects();
+            } catch {
+                alert('One or more files could not be saved.');
+            }
+        });
+
+        saveChartBtn.addEventListener('click', () => {
+            saveProjectsToStorage();
+            showSavedStatus();
+        });
+
+        exportDataBtn.addEventListener('click', () => {
+            const payload = {
+                exportedAt: new Date().toISOString(),
+                projects
+            };
+
+            const blob = new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' });
+            const downloadUrl = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = downloadUrl;
+            link.download = `project-tracker-export-${getTodayISODate()}.json`;
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(downloadUrl);
+        });
+
+        loadProjectsFromStorage();
+        renderProjects();
+    </script>
+</body>
+</html>
