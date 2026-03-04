@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Tracker</title>
+    <title>Project Tracker Pro</title>
     <style>
         * {
             margin: 0;
@@ -31,7 +31,7 @@
         }
 
         header h1 {
-            font-size: 1.8rem;
+            font-size: 2.3rem;
             letter-spacing: 0.2px;
         }
 
@@ -455,8 +455,8 @@
 </head>
 <body>
     <header>
-        <img class="header-logo" src="assets/tracker-logo.svg" alt="Project Tracker logo">
-        <h1>Welcome to Project Tracker</h1>
+        <img class="header-logo" src="../assets/tracker-logo.svg" alt="Project Tracker logo">
+        <h1>Project Tracker Pro</h1>
     </header>
     
     <nav>
@@ -652,10 +652,29 @@
             if (value < 80) {
                 return '#F9A825';
             }
-            if (value < 100) {
-                return '#2E7D32';
+            return '#2E7D32';
+        }
+
+        function updateProgressCell(progressInput, progressValue) {
+            const progressCell = progressInput.closest('td');
+            if (!progressCell) {
+                return;
             }
-            return '#1976D2';
+
+            const normalizedProgress = clampProgress(progressValue);
+            const progressColor = getRaidColor(normalizedProgress);
+            const progressValueLabel = progressCell.querySelector('.progress-value');
+            const progressFill = progressCell.querySelector('.progress-fill');
+
+            if (progressValueLabel) {
+                progressValueLabel.textContent = `${normalizedProgress}%`;
+                progressValueLabel.style.color = progressColor;
+            }
+
+            if (progressFill) {
+                progressFill.style.width = `${normalizedProgress}%`;
+                progressFill.style.background = progressColor;
+            }
         }
 
         function normalizeDocuments(documents) {
@@ -769,6 +788,8 @@
             trackerBody.innerHTML = '';
 
             projects.forEach((project, index) => {
+                const projectProgress = clampProgress(project.progress);
+                const progressColor = getRaidColor(projectProgress);
                 const documentItems = (project.documents || []).map((documentItem) => `
                     <li>
                         <a class="doc-link" href="${documentItem.dataUrl}" download="${documentItem.name}">${documentItem.name}</a>
@@ -798,9 +819,9 @@
                         <span class="days-remaining-badge">${getDaysRemaining(project.startDate, project.endDate)}</span>
                     </td>
                     <td>
-                        <input type="number" min="0" max="100" value="${project.progress}" data-field="progress" data-index="${index}">
-                        <div class="progress-value">${project.progress}%</div>
-                        <div class="progress-bar"><div class="progress-fill" style="width: ${project.progress}%;"></div></div>
+                        <input type="number" min="0" max="100" value="${projectProgress}" data-field="progress" data-index="${index}">
+                        <div class="progress-value" style="color: ${progressColor};">${projectProgress}%</div>
+                        <div class="progress-bar"><div class="progress-fill" style="width: ${projectProgress}%; background: ${progressColor};"></div></div>
                     </td>
                     <td>
                         <input type="text" value="${project.action || ''}" data-field="action" data-index="${index}" placeholder="Next step">
@@ -913,6 +934,7 @@
             if (field === 'progress') {
                 projects[index][field] = clampProgress(target.value);
                 appendProgressHistory(projects[index], projects[index][field]);
+                updateProgressCell(target, projects[index][field]);
             } else {
                 projects[index][field] = target.value;
             }
@@ -997,6 +1019,7 @@
                 if (field === 'progress') {
                     projects[index][field] = clampProgress(target.value);
                     appendProgressHistory(projects[index], projects[index][field]);
+                    updateProgressCell(target, projects[index][field]);
                 } else {
                     projects[index][field] = target.value;
                 }

@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Project Life Cycle</title>
+	<title>Project Tracker Pro</title>
 	<style>
 		* {
 			margin: 0;
@@ -31,7 +31,7 @@
 		}
 
 		header h1 {
-			font-size: 1.8rem;
+			font-size: 2.3rem;
 			letter-spacing: 0.2px;
 		}
 
@@ -400,7 +400,7 @@
 <body>
 	<header>
 		<img class="header-logo" src="assets/tracker-logo.svg" alt="Project Tracker logo">
-		<h1>Project Life Cycle</h1>
+		<h1>Project Tracker Pro</h1>
 	</header>
 
 	<nav>
@@ -419,7 +419,7 @@
 					<button id="save-chart-btn" type="button">Save</button>
 					<span id="save-status" class="save-status"></span>
 				</div>
-				<p>Progress uses RAID colors: Red, Amber, Green.</p>
+				<p>Update project schedule and save your changes.</p>
 			</div>
 
 			<div class="tracker-calendar" aria-label="Project schedule calendar">
@@ -453,7 +453,6 @@
 							<th>End Date</th>
 							<th>Days Remaining</th>
 							<th>Comments</th>
-							<th>Progress (RAID)</th>
 							<th>Documents</th>
 							<th>Action</th>
 						</tr>
@@ -517,18 +516,6 @@
 				reader.onerror = () => reject(new Error("Failed to read file"));
 				reader.readAsDataURL(file);
 			});
-		}
-
-		function getRaidClass(value) {
-			if (value === "Red") {
-				return "raid-pill raid-red";
-			}
-
-			if (value === "Amber") {
-				return "raid-pill raid-amber";
-			}
-
-			return "raid-pill raid-green";
 		}
 
 		function updateDaysRemaining(row) {
@@ -639,15 +626,6 @@
 			calendarGrid.innerHTML = cells.join("");
 		}
 
-		function updateRaidPill(row) {
-			const raidSelect = row.querySelector(".raid-select");
-			const raidPill = row.querySelector(".raid-pill");
-			const value = raidSelect.value;
-
-			raidPill.className = getRaidClass(value);
-			raidPill.textContent = value;
-		}
-
 		function applyAssignedToColor(row) {
 			const assignedToInput = row.querySelector(".assigned-to-input");
 			const assignedColorInput = row.querySelector(".assigned-color-input");
@@ -686,7 +664,6 @@
 				startDate: row.querySelector(".start-date-input")?.value || "",
 				endDate: row.querySelector(".end-date-input")?.value || "",
 				comments: row.querySelector("textarea")?.value || "",
-				raid: row.querySelector(".raid-select")?.value || "Green",
 				documents: normalizeDocuments(row._documents || [])
 			}));
 		}
@@ -706,14 +683,14 @@
 		function loadRowsFromStorage() {
 			const storedRows = localStorage.getItem(projectLifeCycleStorageKey);
 			if (!storedRows) {
-				createRow({ raid: "Green" });
+				createRow();
 				return;
 			}
 
 			try {
 				const parsedRows = JSON.parse(storedRows);
 				if (!Array.isArray(parsedRows) || parsedRows.length === 0) {
-					createRow({ raid: "Green" });
+					createRow();
 					return;
 				}
 
@@ -725,12 +702,11 @@
 						startDate: rowData.startDate || "",
 						endDate: rowData.endDate || "",
 						comments: rowData.comments || "",
-						raid: rowData.raid || "Green",
 						documents: normalizeDocuments(rowData.documents)
 					});
 				});
 			} catch {
-				createRow({ raid: "Green" });
+				createRow();
 			}
 		}
 
@@ -744,7 +720,6 @@
 			const startDate = data.startDate || "";
 			const endDate = data.endDate || "";
 			const comments = data.comments || "";
-			const raid = data.raid || "Green";
 			const documents = normalizeDocuments(data.documents);
 			row._documents = documents;
 
@@ -762,14 +737,6 @@
 				<td><span class="days-remaining">Set Start & End</span></td>
 				<td><textarea placeholder="Notes">${comments}</textarea></td>
 				<td>
-					<select class="raid-select" aria-label="RAID progress">
-						<option value="Red" ${raid === "Red" ? "selected" : ""}>Red</option>
-						<option value="Amber" ${raid === "Amber" ? "selected" : ""}>Amber</option>
-						<option value="Green" ${raid === "Green" ? "selected" : ""}>Green</option>
-					</select>
-					<div class="raid-pill" style="margin-top: 0.4rem;"></div>
-				</td>
-				<td>
 					<input class="doc-upload" type="file" multiple>
 					<ul class="doc-list"></ul>
 				</td>
@@ -782,7 +749,6 @@
 			const startDateInput = row.querySelector(".start-date-input");
 			const endDateInput = row.querySelector(".end-date-input");
 			const assignedColorInput = row.querySelector(".assigned-color-input");
-			const raidSelect = row.querySelector(".raid-select");
 			const docUploadInput = row.querySelector(".doc-upload");
 			const docList = row.querySelector(".doc-list");
 			const saveRowButton = row.querySelector(".save-row");
@@ -794,7 +760,6 @@
 				applyAssignedToColor(row);
 				renderCalendar();
 			});
-			raidSelect.addEventListener("change", () => updateRaidPill(row));
 			docUploadInput.addEventListener("change", async () => {
 				const selectedFiles = Array.from(docUploadInput.files || []);
 				if (selectedFiles.length === 0) {
@@ -833,7 +798,6 @@
 
 			updateDaysRemaining(row);
 			applyAssignedToColor(row);
-			updateRaidPill(row);
 			renderDocuments(row);
 			trackerBody.appendChild(row);
 			renderCalendar();
