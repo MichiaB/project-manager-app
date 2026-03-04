@@ -147,6 +147,7 @@
             border-radius: 8px;
         }
 
+
         .tracker-graph-header {
             display: flex;
             justify-content: flex-end;
@@ -460,7 +461,7 @@
     
     <nav>
         <a href="#home" class="active">Dashboard</a>
-        <a href="blank.html">Project Life Cycle</a>
+        <a href="../blank.html">Project Life Cycle</a>
     </nav>
     
     <main>
@@ -469,8 +470,8 @@
             <p>Track project status, timelines, and progress in one place.</p>
 
             <div class="page-tabs" aria-label="Page tabs">
-                <a class="tab-link active" href="pt.html">Dashboard</a>
-                <a class="tab-link" href="blank.html">Project Life Cycle</a>
+                <a class="tab-link active" href="index.html">Dashboard</a>
+                <a class="tab-link" href="../blank.html">Project Life Cycle</a>
             </div>
 
             <form id="tracker-form" class="tracker-controls" aria-label="Add project to tracker">
@@ -519,7 +520,7 @@
                 <div id="graph-project-values" class="graph-project-values"></div>
             </div>
 
-            <div class="tracker-table-wrap">
+            <div id="tracker-chart" class="tracker-table-wrap">
                 <table class="tracker-chart" aria-label="Project tracker chart">
                     <thead>
                         <tr>
@@ -621,22 +622,26 @@
             return new Date().toISOString().slice(0, 10);
         }
 
-        function getDaysRemaining(endDate) {
-            if (!endDate) {
+
+        function getDaysRemaining(startDate, endDate) {
+            if (!startDate || !endDate) {
                 return '—';
             }
 
-            const today = new Date();
-            const todayAtMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const startDateAtMidnight = new Date(`${startDate}T00:00:00`);
             const endDateAtMidnight = new Date(`${endDate}T00:00:00`);
+
+            if (Number.isNaN(startDateAtMidnight.getTime())) {
+                return '—';
+            }
 
             if (Number.isNaN(endDateAtMidnight.getTime())) {
                 return '—';
             }
 
             const millisecondsPerDay = 24 * 60 * 60 * 1000;
-            const rawDays = Math.ceil((endDateAtMidnight - todayAtMidnight) / millisecondsPerDay);
-            return `${Math.max(0, rawDays)} days`;
+            const rawDays = Math.ceil((endDateAtMidnight - startDateAtMidnight) / millisecondsPerDay);
+            return `${rawDays} days`;
         }
 
         function getRaidColor(progress) {
@@ -790,7 +795,7 @@
                         <input type="date" value="${project.endDate || ''}" data-field="endDate" data-index="${index}">
                     </td>
                     <td>
-                        <span class="days-remaining-badge">${getDaysRemaining(project.endDate)}</span>
+                        <span class="days-remaining-badge">${getDaysRemaining(project.startDate, project.endDate)}</span>
                     </td>
                     <td>
                         <input type="number" min="0" max="100" value="${project.progress}" data-field="progress" data-index="${index}">

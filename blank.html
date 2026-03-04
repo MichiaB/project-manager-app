@@ -1,540 +1,908 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Project Tracker - Extension</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Project Life Cycle</title>
+	<style>
+		* {
+			margin: 0;
+			padding: 0;
+			box-sizing: border-box;
+		}
 
-        body {
-            font-family: "Segoe UI", Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            background: #f3f5f7;
-        }
+		body {
+			font-family: "Segoe UI", Arial, sans-serif;
+			line-height: 1.6;
+			background: #f3f5f7;
+			color: #333;
+		}
 
-        header {
-            background: #7bbccc;
-            color: white;
-            padding: 1.25rem 1rem;
-            text-align: center;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-        }
+		header {
+			background: linear-gradient(135deg, #1f3b5b 0%, #2f5f8f 100%);
+			color: white;
+			padding: 1.25rem 1rem;
+			display: flex;
+			justify-content: center;
+			align-items: center;
+			gap: 0.75rem;
+			box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+			border-bottom: 1px solid rgba(255, 255, 255, 0.18);
+		}
 
-        header h1 {
-            font-size: 1.8rem;
-            letter-spacing: 0.2px;
-        }
+		header h1 {
+			font-size: 1.8rem;
+			letter-spacing: 0.2px;
+		}
 
-        nav {
-            background: #333;
-            padding: 0.5rem;
-            display: flex;
-            justify-content: center;
-            gap: 0.25rem;
-            flex-wrap: wrap;
-        }
+		.header-logo {
+			width: 44px;
+			height: 44px;
+			border-radius: 8px;
+			background: rgba(255, 255, 255, 0.18);
+			padding: 4px;
+		}
 
-        nav a {
-            color: white;
-            text-decoration: none;
-            padding: 0.5rem 0.9rem;
-            display: inline-block;
-            border-radius: 4px;
-            transition: background 0.2s ease;
-        }
+		nav {
+			background: #333;
+			padding: 0.5rem;
+			display: flex;
+			justify-content: center;
+			gap: 0.25rem;
+			flex-wrap: wrap;
+		}
 
-        nav a:hover {
-            background: #4CAF50;
-        }
+		nav a {
+			color: white;
+			text-decoration: none;
+			padding: 0.5rem 0.9rem;
+			display: inline-block;
+			border-radius: 4px;
+			transition: background 0.2s ease;
+			font-weight: 600;
+		}
 
-        nav a.active {
-            background: #4CAF50;
-        }
+		nav a.active,
+		nav a:hover {
+			background: #4CAF50;
+		}
 
-        main {
-            max-width: 1500px;
-            width: min(1500px, 100%);
-            margin: 2rem auto;
-            padding: 0 0.5rem;
-        }
+		.container {
+			max-width: 1900px;
+			width: min(1900px, 100%);
+			margin: 2rem auto;
+			padding: 0 0.5rem;
+		}
 
-        section {
-            margin: 2rem 0;
-            background: #fff;
-            border: 1px solid #e3e6ea;
-            border-radius: 10px;
-            padding: 1.25rem;
-            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-        }
+		.card {
+			background: #fff;
+			border: 1px solid #e3e6ea;
+			border-radius: 10px;
+			padding: 1.25rem;
+			box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+		}
 
-        h2 {
-            margin-bottom: 0.45rem;
-            font-size: 1.35rem;
-        }
+		.tracker-toolbar {
+			display: flex;
+			justify-content: space-between;
+			align-items: center;
+			gap: 0.75rem;
+			flex-wrap: wrap;
+			margin-bottom: 0.9rem;
+		}
 
-        p {
-            color: #4f5b66;
-        }
+		.tracker-toolbar-actions {
+			display: flex;
+			gap: 0.55rem;
+			align-items: center;
+		}
 
-        .page-tabs {
-            display: inline-flex;
-            gap: 0.35rem;
-            margin-top: 0.8rem;
-            margin-bottom: 1rem;
-            background: #eef2f5;
-            border: 1px solid #d7dde3;
-            border-radius: 8px;
-            padding: 0.25rem;
-        }
+		.tracker-toolbar button {
+			background: #4CAF50;
+			color: white;
+			border: 1px solid #2f7f33;
+			border-radius: 4px;
+			padding: 0.45rem 0.8rem;
+			font: inherit;
+			font-weight: 600;
+			cursor: pointer;
+		}
 
-        .tab-link {
-            text-decoration: none;
-            color: #2f3a42;
-            font-size: 0.9rem;
-            font-weight: 600;
-            padding: 0.35rem 0.65rem;
-            border-radius: 6px;
-        }
+		.tracker-toolbar button:hover {
+			filter: brightness(0.95);
+		}
 
-        .tab-link.active {
-            background: #ffffff;
-            border: 1px solid #cfd7df;
-        }
+		.save-status {
+			font-size: 0.8rem;
+			color: #666;
+		}
 
-        .extension-body {
-            min-height: 220px;
-            border: 1px dashed #c9d1d9;
-            border-radius: 8px;
-            background: #fbfcfd;
-            margin-top: 0.5rem;
-        }
+		.tracker-calendar {
+			margin-bottom: 1rem;
+			border: 1px solid #dde2e7;
+			background: #fbfcfd;
+			padding: 0.75rem;
+			border-radius: 8px;
+		}
 
-        .phase-controls {
-            margin-top: 1rem;
-            padding: 1rem;
-            border: 1px solid #dde2e7;
-            background: #fbfcfd;
-            border-radius: 8px;
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 0.75rem;
-            align-items: end;
-        }
+		.tracker-calendar-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.6rem;
+			flex-wrap: wrap;
+			margin-bottom: 0.65rem;
+		}
 
-        .phase-buttons {
-            display: flex;
-            gap: 0.6rem;
-        }
+		.calendar-nav {
+			display: flex;
+			align-items: center;
+			gap: 0.45rem;
+		}
 
-        .phase-buttons button {
-            flex: 1;
-        }
+		.calendar-nav button {
+			background: #333;
+			color: white;
+			border: 1px solid #222;
+			border-radius: 4px;
+			padding: 0.35rem 0.6rem;
+			font: inherit;
+			cursor: pointer;
+		}
 
-        .phase-save-status {
-            margin-top: 0.35rem;
-            font-size: 0.82rem;
-            color: #5b6570;
-        }
+		.calendar-month-label {
+			font-size: 1rem;
+			font-weight: 700;
+			color: #2f3a42;
+			min-width: 160px;
+			text-align: center;
+		}
 
-        .phase-controls label {
-            display: block;
-            font-size: 0.9rem;
-            margin-bottom: 0.25rem;
-        }
+		.calendar-weekdays,
+		.calendar-grid {
+			display: grid;
+			grid-template-columns: repeat(7, minmax(0, 1fr));
+			gap: 0.35rem;
+		}
 
-        .phase-controls input,
-        .phase-controls select,
-        .phase-controls button,
-        .phase-chart input,
-        .phase-chart select,
-        .phase-chart textarea {
-            width: 100%;
-            padding: 0.5rem;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font: inherit;
-        }
+		.calendar-weekdays span {
+			text-align: center;
+			font-size: 0.78rem;
+			font-weight: 700;
+			color: #53616e;
+			padding: 0.15rem 0;
+		}
 
-        .phase-comments {
-            min-height: 68px;
-            resize: vertical;
-            line-height: 1.35;
-        }
+		.calendar-day,
+		.calendar-empty {
+			border: 1px solid #d9e0e6;
+			border-radius: 8px;
+			min-height: 90px;
+			background: #fff;
+			padding: 0.35rem;
+		}
 
-        .phase-controls button,
-        .phase-remove-btn {
-            background: #4CAF50;
-            border: 1px solid #2f7f33;
-            color: white;
-            font-weight: 600;
-            cursor: pointer;
-        }
+		.calendar-empty {
+			background: #f5f8fb;
+		}
 
-        .phase-chart {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 0;
-            background: #fff;
-            border-radius: 8px;
-            overflow: hidden;
-            min-width: 1200px;
-        }
+		.calendar-day-number {
+			font-size: 0.76rem;
+			font-weight: 700;
+			color: #2f3a42;
+			margin-bottom: 0.3rem;
+		}
 
-        .phase-table-wrap {
-            margin-top: 1rem;
-            width: 100%;
-            overflow-x: auto;
-            border-radius: 8px;
-        }
+		.calendar-events {
+			display: grid;
+			gap: 0.25rem;
+		}
 
-        .phase-chart th,
-        .phase-chart td {
-            border: 1px solid #ddd;
-            padding: 0.75rem;
-            text-align: left;
-            vertical-align: top;
-        }
+		.calendar-event {
+			width: 100%;
+			border: 1px solid #cfd7df;
+			border-radius: 6px;
+			background: #ffffff;
+			color: #2f3a42;
+			text-align: left;
+			padding: 0.2rem 0.3rem;
+			font-size: 0.72rem;
+			line-height: 1.25;
+			cursor: pointer;
+		}
 
-        .phase-chart th {
-            background: #f3f6f8;
-            font-weight: 600;
-            color: #2f3a42;
-        }
+		.calendar-event-start {
+			border-left: 3px solid #2e7d32;
+		}
 
-        .phase-chart tbody tr:nth-child(even) {
-            background: #fbfcfd;
-        }
+		.calendar-event-end {
+			border-left: 3px solid #d32f2f;
+		}
 
-        .phase-progress-track {
-            height: 10px;
-            background: #e0e0e0;
-            border-radius: 6px;
-            overflow: hidden;
-            margin-top: 0.4rem;
-        }
+		.table-wrap {
+			overflow-x: auto;
+			border: 1px solid #d9e0e6;
+			border-radius: 8px;
+		}
 
-        .phase-progress-fill {
-            height: 100%;
-            background: #4CAF50;
-        }
+		table {
+			width: 100%;
+			border-collapse: collapse;
+			min-width: 1300px;
+		}
 
-        .phase-remove-btn {
-            background: #333;
-            border: 1px solid #222;
-            padding: 0.5rem 0.7rem;
-            border-radius: 4px;
-        }
+		th,
+		td {
+			border: 1px solid #e1e7ed;
+			padding: 0.55rem;
+			vertical-align: top;
+		}
 
-        footer {
-            background: #333;
-            color: white;
-            text-align: center;
-            padding: 1rem;
-            margin-top: 2rem;
-            font-size: 0.92rem;
-        }
-    </style>
+		th {
+			background: #edf2f6;
+			font-weight: 600;
+			font-size: 0.8rem;
+			text-transform: uppercase;
+			letter-spacing: 0.04em;
+		}
+
+		td input,
+		td select,
+		td textarea {
+			width: 100%;
+			padding: 0.45rem;
+			border: 1px solid #cfd7df;
+			border-radius: 4px;
+			font: inherit;
+		}
+
+		td textarea {
+			min-height: 72px;
+			resize: vertical;
+		}
+
+		.assigned-color-wrap {
+			display: flex;
+			align-items: center;
+			gap: 0.4rem;
+			margin-top: 0.35rem;
+			font-size: 0.78rem;
+			color: #4f5b66;
+		}
+
+		.assigned-color-input {
+			padding: 0;
+			width: 44px;
+			height: 28px;
+			border: 1px solid #cfd7df;
+			border-radius: 4px;
+			cursor: pointer;
+		}
+
+		.doc-upload {
+			margin-bottom: 0.45rem;
+			font-size: 0.82rem;
+		}
+
+		.doc-list {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: grid;
+			gap: 0.3rem;
+		}
+
+		.doc-list li {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+			gap: 0.45rem;
+			font-size: 0.82rem;
+			border: 1px solid #e1e7ed;
+			border-radius: 6px;
+			padding: 0.25rem 0.35rem;
+			background: #f9fbfc;
+		}
+
+		.doc-link {
+			color: #2f5f8f;
+			text-decoration: none;
+			max-width: 160px;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			white-space: nowrap;
+		}
+
+		.doc-remove {
+			background: #333;
+			color: white;
+			border: none;
+			border-radius: 4px;
+			padding: 0.25rem 0.45rem;
+			cursor: pointer;
+			font-size: 0.75rem;
+		}
+
+		.days-remaining {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 94px;
+			padding: 0.3rem 0.55rem;
+			border-radius: 999px;
+			border: 1px solid #cfd7df;
+			background: #f5f8fb;
+			font-size: 0.82rem;
+			font-weight: 600;
+		}
+
+		.raid-pill {
+			display: inline-flex;
+			align-items: center;
+			justify-content: center;
+			min-width: 90px;
+			padding: 0.3rem 0.55rem;
+			border-radius: 999px;
+			font-size: 0.82rem;
+			font-weight: 700;
+			color: white;
+		}
+
+		.raid-red {
+			background: #d32f2f;
+		}
+
+		.raid-amber {
+			background: #f9a825;
+			color: #1f1f1f;
+		}
+
+		.raid-green {
+			background: #2e7d32;
+		}
+
+		.remove-row {
+			background: #333;
+			color: white;
+			border: 1px solid #222;
+			border-radius: 4px;
+			padding: 0.4rem 0.6rem;
+			cursor: pointer;
+			font: inherit;
+		}
+
+		.save-row {
+			background: #4CAF50;
+			color: white;
+			border: 1px solid #2f7f33;
+			border-radius: 4px;
+			padding: 0.4rem 0.6rem;
+			cursor: pointer;
+			font: inherit;
+			margin-bottom: 0.4rem;
+		}
+
+		.save-row:hover,
+		.remove-row:hover {
+			filter: brightness(0.95);
+		}
+
+		h2 {
+			margin-bottom: 0.5rem;
+			font-size: 1.35rem;
+		}
+
+		p {
+			color: #4f5b66;
+		}
+	</style>
 </head>
 <body>
-    <header>
-        <h1>Welcome to Project Tracker</h1>
-    </header>
+	<header>
+		<img class="header-logo" src="assets/tracker-logo.svg" alt="Project Tracker logo">
+		<h1>Project Life Cycle</h1>
+	</header>
 
-    <nav>
-        <a href="pt.html#home">Dashboard</a>
-        <a href="blank.html" class="active">Project Life Cycle</a>
-        <a href="pt.html#about">About</a>
-    </nav>
+	<nav>
+		<a href="Project Tracker/index.html" class="active">Dashboard</a>
+		<a href="blank.html" class="active">Project Life Cycle</a>
+	</nav>
 
-    <main>
-        <section id="extension">
-            <h2>Home Extension</h2>
-            <p>This page extends the Home workspace and can be used for additional tracker content.</p>
+	<main class="container">
+		<section class="card">
+			<h2>Project Life Cycle</h2>
+			<p>Editable project tracker chart for life cycle monitoring.</p>
 
-            <form id="phase-form" class="phase-controls" aria-label="Add project life cycle phase">
-                <div>
-                    <label for="phase-project-name">Project Name</label>
-                    <input id="phase-project-name" name="projectName" type="text" required>
-                </div>
-                <div>
-                    <label for="phase-name">Phase</label>
-                    <input id="phase-name" name="phase" type="text" required>
-                </div>
-                <div>
-                    <label for="phase-status">Status</label>
-                    <select id="phase-status" name="status">
-                        <option>Planning</option>
-                        <option selected>In Progress</option>
-                        <option>Completed</option>
-                    </select>
-                </div>
-                <div>
-                    <label for="phase-comments">Comments</label>
-                    <input id="phase-comments" name="comments" type="text" placeholder="Add comments">
-                </div>
-                <div>
-                    <label for="phase-date">Date</label>
-                    <input id="phase-date" name="date" type="date">
-                </div>
-                <div>
-                    <label for="phase-progress">Progress (%)</label>
-                    <input id="phase-progress" name="progress" type="number" min="0" max="100" value="0" required>
-                </div>
-                <div>
-                    <div class="phase-buttons">
-                        <button type="submit">Add Phase</button>
-                        <button id="save-lifecycle-btn" type="button">Save Current</button>
-                    </div>
-                    <div id="phase-save-status" class="phase-save-status"></div>
-                </div>
-            </form>
+			<div class="tracker-toolbar">
+				<div class="tracker-toolbar-actions">
+					<button id="add-row-btn" type="button">Add Row</button>
+					<button id="save-chart-btn" type="button">Save</button>
+					<span id="save-status" class="save-status"></span>
+				</div>
+				<p>Progress uses RAID colors: Red, Amber, Green.</p>
+			</div>
 
-            <div class="phase-table-wrap">
-                <table class="phase-chart" aria-label="Project life cycle phase tracker">
-                    <thead>
-                        <tr>
-                            <th>Project Name</th>
-                            <th>Phase</th>
-                            <th>Status</th>
-                            <th>Comments</th>
-                            <th>Date</th>
-                            <th>Progress</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody id="phase-body"></tbody>
-                </table>
-            </div>
-        </section>
-    </main>
+			<div class="tracker-calendar" aria-label="Project schedule calendar">
+				<div class="tracker-calendar-header">
+					<div class="calendar-nav">
+						<button id="calendar-prev-btn" type="button" aria-label="Previous month">◀</button>
+						<div id="calendar-month-label" class="calendar-month-label">Month</div>
+						<button id="calendar-next-btn" type="button" aria-label="Next month">▶</button>
+					</div>
+					<input id="calendar-month-picker" type="month" aria-label="Calendar month">
+				</div>
+				<div class="calendar-weekdays" aria-hidden="true">
+					<span>Sun</span>
+					<span>Mon</span>
+					<span>Tue</span>
+					<span>Wed</span>
+					<span>Thu</span>
+					<span>Fri</span>
+					<span>Sat</span>
+				</div>
+				<div id="tracker-calendar-grid" class="calendar-grid"></div>
+			</div>
 
-    <footer>
-        <p>&copy; 2024 Project Tracker. All rights reserved.</p>
-    </footer>
+			<div class="table-wrap">
+				<table aria-label="Project life cycle tracker chart">
+					<thead>
+						<tr>
+							<th>Project Name</th>
+							<th>Assigned To</th>
+							<th>Start Date</th>
+							<th>End Date</th>
+							<th>Days Remaining</th>
+							<th>Comments</th>
+							<th>Progress (RAID)</th>
+							<th>Documents</th>
+							<th>Action</th>
+						</tr>
+					</thead>
+					<tbody id="tracker-body"></tbody>
+				</table>
+			</div>
+		</section>
+	</main>
 
-    <script>
-        const phaseForm = document.getElementById('phase-form');
-        const phaseBody = document.getElementById('phase-body');
-        const saveLifecycleBtn = document.getElementById('save-lifecycle-btn');
-        const phaseSaveStatus = document.getElementById('phase-save-status');
-        const lifecycleStorageKey = 'projectLifeCycleData';
-        const legacyPhaseStorageKey = 'projectLifeCyclePhases';
+	<script>
+		const trackerBody = document.getElementById("tracker-body");
+		const addRowButton = document.getElementById("add-row-btn");
+		const saveChartButton = document.getElementById("save-chart-btn");
+		const saveStatus = document.getElementById("save-status");
+		const calendarGrid = document.getElementById("tracker-calendar-grid");
+		const calendarMonthLabel = document.getElementById("calendar-month-label");
+		const calendarPrevButton = document.getElementById("calendar-prev-btn");
+		const calendarNextButton = document.getElementById("calendar-next-btn");
+		const calendarMonthPicker = document.getElementById("calendar-month-picker");
+		const projectLifeCycleStorageKey = "projectLifeCycleRows";
 
-        let phases = [];
-        let lifecycles = [];
-        let selectedLifecycleId = '';
+		let calendarViewDate = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+		let rowIdCounter = 0;
 
-        const defaultPhases = [
-            { projectName: 'Website Redesign', phase: 'Initiation', status: 'Completed', comments: 'Kickoff approved', date: '2026-02-10', progress: 100 },
-            { projectName: 'Website Redesign', phase: 'Planning', status: 'In Progress', comments: 'Finalizing milestones', date: '2026-02-20', progress: 60 },
-            { projectName: 'Website Redesign', phase: 'Execution', status: 'Planning', comments: '', date: '2026-03-05', progress: 15 }
-        ];
+		function showSavedStatus() {
+			const now = new Date();
+			const timeLabel = now.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+			saveStatus.textContent = `Saved at ${timeLabel}`;
+		}
 
-        function clampProgress(value) {
-            const numberValue = Number(value);
-            if (Number.isNaN(numberValue)) {
-                return 0;
-            }
-            return Math.max(0, Math.min(100, numberValue));
-        }
+		function normalizeDocuments(documents) {
+			if (!Array.isArray(documents)) {
+				return [];
+			}
 
-        function normalizePhase(item) {
-            return {
-                projectName: item.projectName || '',
-                phase: item.phase || '',
-                status: item.status || 'Planning',
-                comments: item.comments || '',
-                date: item.date || '',
-                progress: clampProgress(item.progress)
-            };
-        }
+			return documents
+				.filter((documentItem) => documentItem && typeof documentItem === "object")
+				.filter((documentItem) => typeof documentItem.name === "string" && typeof documentItem.dataUrl === "string")
+				.map((documentItem) => ({
+					id: documentItem.id || `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+					name: documentItem.name,
+					size: Number(documentItem.size) || 0,
+					type: documentItem.type || "",
+					dataUrl: documentItem.dataUrl
+				}));
+		}
 
-        function createLifecycle(name, lifecyclePhases) {
-            return {
-                id: `lc-${Date.now()}-${Math.random().toString(16).slice(2)}`,
-                name,
-                phases: lifecyclePhases
-            };
-        }
+		function readFileAsDataUrl(file) {
+			return new Promise((resolve, reject) => {
+				const reader = new FileReader();
+				reader.onload = () => {
+					resolve({
+						id: `${Date.now()}-${Math.random().toString(16).slice(2)}`,
+						name: file.name,
+						size: file.size,
+						type: file.type,
+						dataUrl: reader.result
+					});
+				};
+				reader.onerror = () => reject(new Error("Failed to read file"));
+				reader.readAsDataURL(file);
+			});
+		}
 
-        function getCurrentLifecycle() {
-            return lifecycles.find((lifecycle) => lifecycle.id === selectedLifecycleId) || null;
-        }
+		function getRaidClass(value) {
+			if (value === "Red") {
+				return "raid-pill raid-red";
+			}
 
-        function saveLifecycleData() {
-            const payload = {
-                selectedLifecycleId,
-                lifecycles
-            };
-            localStorage.setItem(lifecycleStorageKey, JSON.stringify(payload));
-        }
+			if (value === "Amber") {
+				return "raid-pill raid-amber";
+			}
 
-        function showLifecycleStatus(message) {
-            const now = new Date();
-            const timeLabel = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            phaseSaveStatus.textContent = `${message} (${timeLabel})`;
-        }
+			return "raid-pill raid-green";
+		}
 
-        function loadLifecycleData() {
-            const stored = localStorage.getItem(lifecycleStorageKey);
-            if (stored) {
-                try {
-                    const parsed = JSON.parse(stored);
-                    if (Array.isArray(parsed.lifecycles) && parsed.lifecycles.length > 0) {
-                        lifecycles = parsed.lifecycles.map((lifecycle, index) => ({
-                            id: lifecycle.id || `lc-${index}`,
-                            name: lifecycle.name || `Project Life Cycle ${index + 1}`,
-                            phases: Array.isArray(lifecycle.phases)
-                                ? lifecycle.phases.map((item) => normalizePhase(item))
-                                : []
-                        }));
+		function updateDaysRemaining(row) {
+			const startDateInput = row.querySelector(".start-date-input");
+			const endDateInput = row.querySelector(".end-date-input");
+			const daysRemainingBadge = row.querySelector(".days-remaining");
+			const startDate = startDateInput.value;
+			const endDate = endDateInput.value;
 
-                        selectedLifecycleId = parsed.selectedLifecycleId && lifecycles.some((item) => item.id === parsed.selectedLifecycleId)
-                            ? parsed.selectedLifecycleId
-                            : lifecycles[0].id;
-                        const currentLifecycle = getCurrentLifecycle();
-                        phases = currentLifecycle ? currentLifecycle.phases : [];
-                        return;
-                    }
-                } catch {
-                }
-            }
+			if (!startDate || !endDate) {
+				daysRemainingBadge.textContent = "Set Start & End";
+				return;
+			}
 
-            const legacyStored = localStorage.getItem(legacyPhaseStorageKey);
-            if (legacyStored) {
-                try {
-                    const parsedLegacy = JSON.parse(legacyStored);
-                    const legacyPhases = Array.isArray(parsedLegacy)
-                        ? parsedLegacy.map((item) => normalizePhase(item))
-                        : [...defaultPhases];
-                    const migratedLifecycle = createLifecycle('Project Life Cycle 1', legacyPhases);
-                    lifecycles = [migratedLifecycle];
-                    selectedLifecycleId = migratedLifecycle.id;
-                    phases = migratedLifecycle.phases;
-                    saveLifecycleData();
-                    return;
-                } catch {
-                }
-            }
+			const start = new Date(startDate + "T00:00:00");
+			const due = new Date(endDate + "T00:00:00");
+			const diffMs = due.getTime() - start.getTime();
+			const diffDays = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+			daysRemainingBadge.textContent = diffDays + " days";
+			renderCalendar();
+		}
 
-            const initialLifecycle = createLifecycle('Project Life Cycle 1', [...defaultPhases]);
-            lifecycles = [initialLifecycle];
-            selectedLifecycleId = initialLifecycle.id;
-            phases = initialLifecycle.phases;
-            saveLifecycleData();
-        }
+		function toISODate(year, monthIndex, day) {
+			const yearValue = String(year);
+			const monthValue = String(monthIndex + 1).padStart(2, "0");
+			const dayValue = String(day).padStart(2, "0");
+			return `${yearValue}-${monthValue}-${dayValue}`;
+		}
 
-        function renderPhases() {
-            phaseBody.innerHTML = '';
+		function buildCalendarEventsByDate() {
+			const eventsByDate = new Map();
+			const rows = Array.from(trackerBody.querySelectorAll("tr[data-row-id]"));
 
-            phases.forEach((item, index) => {
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><input type="text" value="${item.projectName || ''}" data-field="projectName" data-index="${index}"></td>
-                    <td><input type="text" value="${item.phase}" data-field="phase" data-index="${index}"></td>
-                    <td>
-                        <select data-field="status" data-index="${index}">
-                            <option ${item.status === 'Planning' ? 'selected' : ''}>Planning</option>
-                            <option ${item.status === 'In Progress' ? 'selected' : ''}>In Progress</option>
-                            <option ${item.status === 'Completed' ? 'selected' : ''}>Completed</option>
-                        </select>
-                    </td>
-                    <td><textarea class="phase-comments" data-field="comments" data-index="${index}" placeholder="Add comments">${item.comments || ''}</textarea></td>
-                    <td><input type="date" value="${item.date || ''}" data-field="date" data-index="${index}"></td>
-                    <td>
-                        <input type="number" min="0" max="100" value="${item.progress}" data-field="progress" data-index="${index}">
-                        <div class="phase-progress-track"><div class="phase-progress-fill" style="width: ${item.progress}%;"></div></div>
-                    </td>
-                    <td><button type="button" class="phase-remove-btn" data-action="remove-phase" data-index="${index}">Remove</button></td>
-                `;
-                phaseBody.appendChild(row);
-            });
-        }
+			rows.forEach((row) => {
+				const rowId = row.dataset.rowId;
+				const nameInput = row.querySelector(".project-name-input");
+				const assignedColorInput = row.querySelector(".assigned-color-input");
+				const startDateInput = row.querySelector(".start-date-input");
+				const endDateInput = row.querySelector(".end-date-input");
+				const labelPrefix = (nameInput?.value || "Untitled").trim() || "Untitled";
+				const assignedColor = assignedColorInput?.value || "#4caf50";
 
-        phaseForm.addEventListener('submit', (event) => {
-            event.preventDefault();
+				if (startDateInput?.value) {
+					const startEvents = eventsByDate.get(startDateInput.value) || [];
+					startEvents.push({
+						rowId,
+						field: "startDate",
+						type: "start",
+						color: assignedColor,
+						label: `${labelPrefix} starts`
+					});
+					eventsByDate.set(startDateInput.value, startEvents);
+				}
 
-            const formData = new FormData(phaseForm);
-            const projectName = (formData.get('projectName') || '').toString().trim();
-            const phase = (formData.get('phase') || '').toString().trim();
-            const status = (formData.get('status') || 'Planning').toString();
-            const comments = (formData.get('comments') || '').toString();
-            const date = (formData.get('date') || '').toString();
-            const progress = clampProgress(formData.get('progress'));
+				if (endDateInput?.value) {
+					const endEvents = eventsByDate.get(endDateInput.value) || [];
+					endEvents.push({
+						rowId,
+						field: "endDate",
+						type: "end",
+						color: assignedColor,
+						label: `${labelPrefix} ends`
+					});
+					eventsByDate.set(endDateInput.value, endEvents);
+				}
+			});
 
-            if (!projectName || !phase) {
-                return;
-            }
+			return eventsByDate;
+		}
 
-            phases.push({ projectName, phase, status, comments, date, progress });
-            saveLifecycleData();
-            renderPhases();
+		function renderCalendar() {
+			const year = calendarViewDate.getFullYear();
+			const monthIndex = calendarViewDate.getMonth();
+			const firstDay = new Date(year, monthIndex, 1);
+			const lastDay = new Date(year, monthIndex + 1, 0);
+			const startWeekday = firstDay.getDay();
+			const totalDays = lastDay.getDate();
+			const eventsByDate = buildCalendarEventsByDate();
 
-            phaseForm.reset();
-            document.getElementById('phase-status').value = 'In Progress';
-            document.getElementById('phase-progress').value = '0';
-        });
+			calendarMonthLabel.textContent = firstDay.toLocaleDateString([], { month: "long", year: "numeric" });
+			calendarMonthPicker.value = `${year}-${String(monthIndex + 1).padStart(2, "0")}`;
 
-        phaseBody.addEventListener('input', (event) => {
-            const target = event.target;
-            const index = Number(target.dataset.index);
-            const field = target.dataset.field;
+			const cells = [];
 
-            if (Number.isNaN(index) || !phases[index] || !field) {
-                return;
-            }
+			for (let i = 0; i < startWeekday; i += 1) {
+				cells.push('<div class="calendar-empty" aria-hidden="true"></div>');
+			}
 
-            phases[index][field] = field === 'progress' ? clampProgress(target.value) : target.value;
-            saveLifecycleData();
+			for (let day = 1; day <= totalDays; day += 1) {
+				const dateKey = toISODate(year, monthIndex, day);
+				const events = eventsByDate.get(dateKey) || [];
+				const eventMarkup = events
+					.map((eventItem) => `
+						<button type="button" class="calendar-event calendar-event-${eventItem.type}" data-row-id="${eventItem.rowId}" data-field="${eventItem.field}" style="border-left-color: ${eventItem.color};">
+							${eventItem.label}
+						</button>
+					`)
+					.join("");
 
-            if (field === 'progress') {
-                const fill = target.nextElementSibling?.firstElementChild;
-                if (fill) {
-                    fill.style.width = `${phases[index][field]}%`;
-                }
-            }
-        });
+				cells.push(`
+					<div class="calendar-day" data-date="${dateKey}">
+						<div class="calendar-day-number">${day}</div>
+						<div class="calendar-events">${eventMarkup}</div>
+					</div>
+				`);
+			}
 
-        phaseBody.addEventListener('change', (event) => {
-            const target = event.target;
-            const index = Number(target.dataset.index);
-            const field = target.dataset.field;
+			calendarGrid.innerHTML = cells.join("");
+		}
 
-            if (!Number.isNaN(index) && phases[index] && field) {
-                phases[index][field] = field === 'progress' ? clampProgress(target.value) : target.value;
-                saveLifecycleData();
-                renderPhases();
-                return;
-            }
+		function updateRaidPill(row) {
+			const raidSelect = row.querySelector(".raid-select");
+			const raidPill = row.querySelector(".raid-pill");
+			const value = raidSelect.value;
 
-            if (target.dataset.action !== 'remove-phase') {
-                return;
-            }
+			raidPill.className = getRaidClass(value);
+			raidPill.textContent = value;
+		}
 
-            const removeIndex = Number(target.dataset.index);
-            if (Number.isNaN(removeIndex) || !phases[removeIndex]) {
-                return;
-            }
+		function applyAssignedToColor(row) {
+			const assignedToInput = row.querySelector(".assigned-to-input");
+			const assignedColorInput = row.querySelector(".assigned-color-input");
+			if (!assignedToInput || !assignedColorInput) {
+				return;
+			}
 
-            phases.splice(removeIndex, 1);
-            saveLifecycleData();
-            renderPhases();
-        });
+			assignedToInput.style.borderLeft = `6px solid ${assignedColorInput.value}`;
+		}
 
-        saveLifecycleBtn.addEventListener('click', () => {
-            saveLifecycleData();
-            const currentLifecycle = getCurrentLifecycle();
-            showLifecycleStatus(`Saved ${currentLifecycle ? currentLifecycle.name : 'life cycle'}`);
-        });
+		function renderDocuments(row) {
+			const docList = row.querySelector(".doc-list");
+			if (!docList) {
+				return;
+			}
 
-        loadLifecycleData();
-        renderPhases();
-    </script>
+			const documents = normalizeDocuments(row._documents || []);
+			row._documents = documents;
+
+			docList.innerHTML = documents
+				.map((documentItem) => `
+					<li>
+						<a class="doc-link" href="${documentItem.dataUrl}" download="${documentItem.name}">${documentItem.name}</a>
+						<button type="button" class="doc-remove" data-doc-id="${documentItem.id}">Remove</button>
+					</li>
+				`)
+				.join("");
+		}
+
+		function collectRowsData() {
+			const rows = Array.from(trackerBody.querySelectorAll("tr[data-row-id]"));
+			return rows.map((row) => ({
+				projectName: row.querySelector(".project-name-input")?.value || "",
+				assignedTo: row.querySelector(".assigned-to-input")?.value || "",
+				assignedToColor: row.querySelector(".assigned-color-input")?.value || "#4caf50",
+				startDate: row.querySelector(".start-date-input")?.value || "",
+				endDate: row.querySelector(".end-date-input")?.value || "",
+				comments: row.querySelector("textarea")?.value || "",
+				raid: row.querySelector(".raid-select")?.value || "Green",
+				documents: normalizeDocuments(row._documents || [])
+			}));
+		}
+
+		function saveRowsToStorage() {
+			const payload = collectRowsData();
+			try {
+				localStorage.setItem(projectLifeCycleStorageKey, JSON.stringify(payload));
+				showSavedStatus();
+				return true;
+			} catch {
+				alert("Could not save chart data. Browser storage may be full.");
+				return false;
+			}
+		}
+
+		function loadRowsFromStorage() {
+			const storedRows = localStorage.getItem(projectLifeCycleStorageKey);
+			if (!storedRows) {
+				createRow({ raid: "Green" });
+				return;
+			}
+
+			try {
+				const parsedRows = JSON.parse(storedRows);
+				if (!Array.isArray(parsedRows) || parsedRows.length === 0) {
+					createRow({ raid: "Green" });
+					return;
+				}
+
+				parsedRows.forEach((rowData) => {
+					createRow({
+						projectName: rowData.projectName || "",
+						assignedTo: rowData.assignedTo || "",
+						assignedToColor: rowData.assignedToColor || "#4caf50",
+						startDate: rowData.startDate || "",
+						endDate: rowData.endDate || "",
+						comments: rowData.comments || "",
+						raid: rowData.raid || "Green",
+						documents: normalizeDocuments(rowData.documents)
+					});
+				});
+			} catch {
+				createRow({ raid: "Green" });
+			}
+		}
+
+		function createRow(data = {}) {
+			const row = document.createElement("tr");
+			rowIdCounter += 1;
+			row.dataset.rowId = String(rowIdCounter);
+			const projectName = data.projectName || "";
+			const assignedTo = data.assignedTo || "";
+			const assignedToColor = data.assignedToColor || "#4caf50";
+			const startDate = data.startDate || "";
+			const endDate = data.endDate || "";
+			const comments = data.comments || "";
+			const raid = data.raid || "Green";
+			const documents = normalizeDocuments(data.documents);
+			row._documents = documents;
+
+			row.innerHTML = `
+				<td><input class="project-name-input" type="text" value="${projectName}" placeholder="Project Name"></td>
+				<td>
+					<input class="assigned-to-input" type="text" value="${assignedTo}" placeholder="Assigned To">
+					<div class="assigned-color-wrap">
+						<span>Color</span>
+						<input class="assigned-color-input" type="color" value="${assignedToColor}" aria-label="Assigned to color">
+					</div>
+				</td>
+				<td><input class="start-date-input" type="date" value="${startDate}"></td>
+				<td><input class="end-date-input" type="date" value="${endDate}"></td>
+				<td><span class="days-remaining">Set Start & End</span></td>
+				<td><textarea placeholder="Notes">${comments}</textarea></td>
+				<td>
+					<select class="raid-select" aria-label="RAID progress">
+						<option value="Red" ${raid === "Red" ? "selected" : ""}>Red</option>
+						<option value="Amber" ${raid === "Amber" ? "selected" : ""}>Amber</option>
+						<option value="Green" ${raid === "Green" ? "selected" : ""}>Green</option>
+					</select>
+					<div class="raid-pill" style="margin-top: 0.4rem;"></div>
+				</td>
+				<td>
+					<input class="doc-upload" type="file" multiple>
+					<ul class="doc-list"></ul>
+				</td>
+				<td>
+					<button class="save-row" type="button">Save</button>
+					<button class="remove-row" type="button">Remove</button>
+				</td>
+			`;
+
+			const startDateInput = row.querySelector(".start-date-input");
+			const endDateInput = row.querySelector(".end-date-input");
+			const assignedColorInput = row.querySelector(".assigned-color-input");
+			const raidSelect = row.querySelector(".raid-select");
+			const docUploadInput = row.querySelector(".doc-upload");
+			const docList = row.querySelector(".doc-list");
+			const saveRowButton = row.querySelector(".save-row");
+			const removeButton = row.querySelector(".remove-row");
+
+			startDateInput.addEventListener("change", () => updateDaysRemaining(row));
+			endDateInput.addEventListener("change", () => updateDaysRemaining(row));
+			assignedColorInput.addEventListener("input", () => {
+				applyAssignedToColor(row);
+				renderCalendar();
+			});
+			raidSelect.addEventListener("change", () => updateRaidPill(row));
+			docUploadInput.addEventListener("change", async () => {
+				const selectedFiles = Array.from(docUploadInput.files || []);
+				if (selectedFiles.length === 0) {
+					return;
+				}
+
+				try {
+					const newDocuments = await Promise.all(selectedFiles.map((file) => readFileAsDataUrl(file)));
+					row._documents = [...normalizeDocuments(row._documents || []), ...newDocuments];
+					renderDocuments(row);
+					docUploadInput.value = "";
+				} catch {
+					alert("One or more files could not be added.");
+				}
+			});
+
+			docList.addEventListener("click", (event) => {
+				const removeDocButton = event.target.closest(".doc-remove");
+				if (!removeDocButton) {
+					return;
+				}
+
+				const docId = removeDocButton.dataset.docId;
+				row._documents = normalizeDocuments(row._documents || []).filter((documentItem) => documentItem.id !== docId);
+				renderDocuments(row);
+			});
+
+			saveRowButton.addEventListener("click", () => {
+				saveRowsToStorage();
+			});
+
+			removeButton.addEventListener("click", () => {
+				row.remove();
+				renderCalendar();
+			});
+
+			updateDaysRemaining(row);
+			applyAssignedToColor(row);
+			updateRaidPill(row);
+			renderDocuments(row);
+			trackerBody.appendChild(row);
+			renderCalendar();
+		}
+
+		addRowButton.addEventListener("click", () => createRow());
+		saveChartButton.addEventListener("click", () => saveRowsToStorage());
+
+		calendarPrevButton.addEventListener("click", () => {
+			calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1, 1);
+			renderCalendar();
+		});
+
+		calendarNextButton.addEventListener("click", () => {
+			calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1, 1);
+			renderCalendar();
+		});
+
+		calendarMonthPicker.addEventListener("change", () => {
+			if (!calendarMonthPicker.value) {
+				return;
+			}
+
+			const [year, month] = calendarMonthPicker.value.split("-").map(Number);
+			if (!year || !month) {
+				return;
+			}
+
+			calendarViewDate = new Date(year, month - 1, 1);
+			renderCalendar();
+		});
+
+		calendarGrid.addEventListener("click", (event) => {
+			const eventButton = event.target.closest(".calendar-event");
+			if (!eventButton) {
+				return;
+			}
+
+			const rowId = eventButton.dataset.rowId;
+			const field = eventButton.dataset.field;
+			const row = trackerBody.querySelector(`tr[data-row-id="${rowId}"]`);
+
+			if (!row || (field !== "startDate" && field !== "endDate")) {
+				return;
+			}
+
+			const dateInput = row.querySelector(field === "startDate" ? ".start-date-input" : ".end-date-input");
+			const nameInput = row.querySelector(".project-name-input");
+			const projectLabel = (nameInput?.value || "project").trim() || "project";
+			const label = field === "startDate" ? "start" : "end";
+			const currentValue = dateInput?.value || "";
+			const nextValue = prompt(`Edit ${label} date for ${projectLabel} (YYYY-MM-DD):`, currentValue);
+
+			if (nextValue === null || !dateInput) {
+				return;
+			}
+
+			const trimmedValue = nextValue.trim();
+			if (trimmedValue !== "" && !/^\d{4}-\d{2}-\d{2}$/.test(trimmedValue)) {
+				alert("Please use YYYY-MM-DD format.");
+				return;
+			}
+
+			dateInput.value = trimmedValue;
+			updateDaysRemaining(row);
+			renderCalendar();
+		});
+
+		loadRowsFromStorage();
+	</script>
 </body>
 </html>
